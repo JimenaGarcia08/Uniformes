@@ -29,15 +29,23 @@ const LoginScreen = ({ navigation }) => {
   setIsLoading(true);
 
   try {
-    const emailFake = username + "@app.com";
-
+    const emailFake = username.trim() + "@app.com";
     await signInWithEmailAndPassword(auth, emailFake, password);
+    // ✅ Sin navigation.replace — el RootNavigator detecta el login y navega solo
 
-    navigation.replace('Main');
-
-  } catch (error) {
-    console.log(error);
-    setError('Usuario o contraseña incorrectos');
+  } catch (e) {
+    switch (e.code) {
+      case 'auth/user-not-found':
+      case 'auth/wrong-password':
+      case 'auth/invalid-credential':
+        setError('Usuario o contraseña incorrectos');
+        break;
+      case 'auth/too-many-requests':
+        setError('Demasiados intentos. Intenta más tarde');
+        break;
+      default:
+        setError('Ocurrió un error. Intenta de nuevo');
+    }
   } finally {
     setIsLoading(false);
   }
