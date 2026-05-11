@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Heading, VStack, Box, HStack } from '@gluestack-ui/themed';
 import { signOut } from 'firebase/auth';
@@ -13,23 +13,11 @@ const ConfiguracionScreen = ({ navigation }) => {
   const [loadingReporte, setLoadingReporte] = useState(null); 
 
   // ─── CERRAR SESIÓN ───────────────────────────────────────
-  const handleCerrarSesion = () => {
-    Alert.alert(
-      'Cerrar sesión',
-      '¿Estás seguro que deseas salir?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Cerrar sesión',
-          style: 'destructive',
-          onPress: async () => {
-            await signOut(auth);
-            navigation.replace('Login');
-          },
-        },
-      ]
-    );
-  };
+const [modalCerrarSesion, setModalCerrarSesion] = useState(false);
+
+const handleCerrarSesion = async () => {
+  await signOut(auth);
+};
 
   // ─── REPORTE INVENTARIO ──────────────────────────────────
  const generarReporteInventario = async () => {
@@ -232,7 +220,7 @@ const generarReporteMovimientos = async () => {
           {/* Cerrar sesión */}
           <Text style={[styles.sectionTitle, { marginTop: 8 }]}>CUENTA</Text>
 
-          <TouchableOpacity onPress={handleCerrarSesion}>
+            <TouchableOpacity onPress={() => setModalCerrarSesion(true)}>
             <Box style={[styles.menuCard, styles.logoutCard]}>
               <HStack space="md" alignItems="center">
                 <View style={[styles.iconContainer, styles.logoutIcon]}>
@@ -249,6 +237,29 @@ const generarReporteMovimientos = async () => {
 
         </VStack>
       </ScrollView>
+
+      {modalCerrarSesion && (
+  <View style={styles.confirmOverlay}>
+    <View style={styles.confirmBox}>
+      <Text style={styles.confirmTitle}>¿Cerrar sesión?</Text>
+      <Text style={styles.confirmSubtitle}>Tendrás que volver a iniciar sesión</Text>
+      <HStack space="md" style={{ marginTop: 20 }}>
+        <TouchableOpacity
+          style={styles.confirmCancel}
+          onPress={() => setModalCerrarSesion(false)}
+        >
+          <Text style={styles.confirmCancelText}>Cancelar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.confirmLogout}
+          onPress={handleCerrarSesion}
+        >
+          <Text style={styles.confirmLogoutText}>Cerrar sesión</Text>
+        </TouchableOpacity>
+      </HStack>
+    </View>
+  </View>
+)}
     </SafeAreaView>
   );
 };
@@ -279,6 +290,38 @@ const styles = StyleSheet.create({
   menuTitle: { fontSize: 16, fontWeight: '600', color: '#1f2937' },
   logoutText: { color: '#ef4444' },
   menuDescription: { fontSize: 13, color: '#6b7280', marginTop: 2 },
+
+  confirmOverlay: {
+  position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+  backgroundColor: 'rgba(0,0,0,0.5)',
+  justifyContent: 'center', alignItems: 'center',
+},
+confirmBox: {
+  backgroundColor: '#ffffff', borderRadius: 16,
+  padding: 24, width: '80%',
+},
+confirmTitle: {
+  fontSize: 18, fontWeight: '700', color: '#1f2937', marginBottom: 4,
+},
+confirmSubtitle: {
+  fontSize: 14, color: '#6b7280',
+},
+confirmCancel: {
+  flex: 1, paddingVertical: 12, borderRadius: 8,
+  borderWidth: 1, borderColor: '#e5e7eb', alignItems: 'center',
+},
+confirmCancelText: {
+  color: '#6b7280', fontWeight: '500',
+},
+confirmLogout: {
+  flex: 1, paddingVertical: 12, borderRadius: 8,
+  backgroundColor: '#ef4444', alignItems: 'center',
+},
+confirmLogoutText: {
+  color: '#ffffff', fontWeight: '600',
+},
 });
+
+
 
 export default ConfiguracionScreen;
