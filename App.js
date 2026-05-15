@@ -3,9 +3,10 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { TouchableOpacity, StyleSheet, View, Text, ActivityIndicator } from 'react-native'; // ✅ agrega ActivityIndicator
+import { TouchableOpacity, StyleSheet, View, Text, ActivityIndicator } from 'react-native';
 import { GluestackUIProvider } from '@gluestack-ui/themed';
 import { config } from '@gluestack-ui/config';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import LoginScreen from './screens/LoginScreen';
 import InventarioScreen from './screens/InventarioScreen';
@@ -39,26 +40,31 @@ const CustomTabBarButton = () => {
 const MainTabs = () => {
   const { rol } = useAuth();
   const esAdmin = rol === 'admin';
+  const insets = useSafeAreaInsets();
 
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
-          if (route.name === 'Inventario') iconName = focused ? 'grid' : 'grid-outline';
+          if (route.name === 'Inventario')   iconName = focused ? 'grid'             : 'grid-outline';
           else if (route.name === 'Movimientos') iconName = focused ? 'swap-horizontal' : 'swap-horizontal-outline';
-          else if (route.name === 'Configuración') iconName = focused ? 'settings' : 'settings-outline';
+          else if (route.name === 'Configuración') iconName = focused ? 'settings'      : 'settings-outline';
           if (iconName) return <Ionicons name={iconName} size={size} color={color} />;
           return null;
         },
         tabBarActiveTintColor: '#3b82f6',
         tabBarInactiveTintColor: '#6b7280',
-        tabBarStyle: styles.tabBar,
         headerShown: false,
+        tabBarStyle: {
+          ...styles.tabBar,
+          height: 60 + insets.bottom,      
+          paddingBottom: 8 + insets.bottom,
+        },
       })}
     >
-      <Tab.Screen name="Inventario" component={InventarioScreen} />
-      <Tab.Screen name="Movimientos" component={MovimientosScreen} />
+      <Tab.Screen name="Inventario"   component={InventarioScreen} />
+      <Tab.Screen name="Movimientos"  component={MovimientosScreen} />
 
       {esAdmin && (
         <Tab.Screen
@@ -113,12 +119,10 @@ export default function App() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    height: 60,
-    paddingBottom: 8,
-    paddingTop: 8,
     backgroundColor: '#ffffff',
     borderTopWidth: 1,
     borderTopColor: '#e5e7eb',
+    paddingTop: 8,
   },
   addButtonWrapper: {
     top: -20,

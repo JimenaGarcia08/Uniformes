@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "inventario-uniformes",
-    "slug": "inventario-uniformes",
+    "name": "Inventario-Uniformes",
+    "slug": "Inventario-Uniformes",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -20,10 +20,16 @@
         "foregroundImage": "./assets/uniforme.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.jimenagarper.InventarioUniformes"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "1b84d6dc-4bbc-4070-8bd1-61867a28e06b"
+      }
     }
   }
 }
